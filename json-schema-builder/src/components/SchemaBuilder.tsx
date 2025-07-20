@@ -1,8 +1,8 @@
-// src/components/SchemaBuilder.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { v4 as uuidv4 } from "uuid";
 import FieldRow from "./FieldRow";
+import { useFormContext } from "react-hook-form";
 
 export type FieldType = "string" | "number" | "nested";
 
@@ -15,6 +15,23 @@ export type SchemaField = {
 
 export default function SchemaBuilder() {
   const [fields, setFields] = useState<SchemaField[]>([]);
+  const { setValue } = useFormContext();
+
+  const buildJSON = (fields: SchemaField[]) => {
+    const obj: Record<string, any> = {};
+    for (const f of fields) {
+      if (!f.key) continue;
+      obj[f.key] = f.type === "nested"
+        ? buildJSON(f.children || [])
+        : f.type === "string" ? "string" : 0;
+    }
+    return obj;
+  };
+
+  useEffect(() => {
+    const jsonOutput = buildJSON(fields);
+    setValue("jsonOutput", jsonOutput, { shouldValidate: true });
+  }, [fields, setValue]);
 
   const handleFieldChange = (id: string, updated: SchemaField) => {
     setFields(fields.map(f => f.id === id ? updated : f));
@@ -32,19 +49,8 @@ export default function SchemaBuilder() {
     }]);
   };
 
-  const buildJSON = (fields: SchemaField[]) => {
-    const obj: Record<string, any> = {};
-    for (const f of fields) {
-      if (!f.key) continue;
-      obj[f.key] = f.type === "nested"
-        ? buildJSON(f.children || [])
-        : f.type === "string" ? "string" : 0;
-    }
-    return obj;
-  };
-
   return (
-    <div className="p-4 space-y-4">
+    <div className="space-y-4">
       {fields.map(field => (
         <FieldRow
           key={field.id}
@@ -54,11 +60,6 @@ export default function SchemaBuilder() {
         />
       ))}
       <Button onClick={addField}>Add Field</Button>
-
-      <div className="mt-6 p-4 border rounded-md bg-gray-100">
-        <h3 className="font-semibold mb-2">JSON Output:</h3>
-        <pre className="text-sm">{JSON.stringify(buildJSON(fields), null, 2)}</pre>
-      </div>
     </div>
   );
 }

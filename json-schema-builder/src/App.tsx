@@ -19,60 +19,51 @@ function App() {
   useEffect(() => {
   }, [schemaData, jsonOutputData, methods]);
 
-
   const handleFileUpload = (uploadedSchema: Record<string, any>) => {
     console.log("Uploaded Schema:", uploadedSchema);
     alert("Upload functionality not fully integrated with builder state yet.");
   };
 
-
   return (
-    <FormProvider {...methods}>
-      <div className="min-h-screen bg-gray-100 p-6">
-        <h1 className="text-3xl font-bold text-center mb-10">JSON Schema Builder</h1>
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <FormProvider {...methods}>
+        <div className="p-6 pb-0">
+          <h1 className="text-3xl font-bold text-center mb-10">JSON Schema Builder</h1>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto">
-          <Card className="bg-white shadow-lg">
-            <CardHeader>
-              <CardTitle>Schema Builder</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <SchemaBuilder />
-            </CardContent>
-          </Card>
+        <div className="flex-1 px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto min-h-[300px]">
+            <Card className="bg-white shadow-lg flex flex-col min-h-[300px]">
+              <CardHeader className="flex-shrink-0">
+                <CardTitle>Schema Builder</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-auto p-6">
+                <SchemaBuilder />
+              </CardContent>
+            </Card>
 
-          <div className="space-y-6">
-            <Card className="bg-white shadow-lg overflow-auto max-h-[40vh]">
-              <CardHeader>
+            <Card className="bg-white shadow-lg flex flex-col min-h-[300px]">
+              <CardHeader className="flex-shrink-0">
                 <CardTitle>JSON Output</CardTitle>
               </CardHeader>
-              <CardContent>
-                <pre className="text-sm bg-gray-50 p-4 rounded border overflow-x-auto whitespace-pre-wrap text-gray-800">
+              <CardContent className="flex-1 overflow-auto p-6">
+                <pre className="text-sm bg-gray-50 p-4 rounded border min-h-[200px] whitespace-pre-wrap text-gray-800">
                   {JSON.stringify(jsonOutputData, null, 2)}
                 </pre>
               </CardContent>
             </Card>
+          </div>
 
-            <Card className="bg-white shadow-lg overflow-auto max-h-[40vh]">
-              <CardHeader>
-                <CardTitle>Generated Schema</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <SchemaViewer schema={schemaData} />
-              </CardContent>
-            </Card>
+          <div className="max-w-7xl mx-auto mt-6 pb-6">
+            <FileEditor onUpload={handleFileUpload} schema={jsonOutputData} />
           </div>
         </div>
+      </FormProvider>
 
-        <div className="max-w-7xl mx-auto mt-6">
-          <FileEditor onUpload={handleFileUpload} schema={jsonOutputData} />
-        </div>
-      </div>
-
-      <footer className="mt-6 py-4 text-center text-gray-600 text-sm w-full">
+      <footer className="py-4 text-center text-gray-600 text-sm bg-white border-t mt-auto">
         Made with <span role="img" aria-label="love">❤️</span> by Ihthisham.
       </footer>
-    </FormProvider>
+    </div>
   );
 }
 
